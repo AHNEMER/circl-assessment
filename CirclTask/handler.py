@@ -13,7 +13,7 @@ def uploadCustomer(event, context):
         name = body['name']
         email = body['email']
 
-        # Create a unique key for the S3 object 
+        # Create a unique key for the S3 object
         key = f"{name}.json"
 
         # convert data to json to store in S3
@@ -29,11 +29,6 @@ def uploadCustomer(event, context):
             'body': json.dumps({'message': 'Customer uploaded successfully'})
         }
     except ClientError as e:
-        return {
-            'statusCode': 500,
-            'body': json.dumps({'error': str(e)})
-        }
-    except Exception as e:
         return {
             'statusCode': 500,
             'body': json.dumps({'error': str(e)})
@@ -59,11 +54,6 @@ def getCustomers(event, context):
             'body': json.dumps(customers)
         }
     except ClientError as e:
-        return {
-            'statusCode': 500,
-            'body': json.dumps({'error': str(e)})
-        }
-    except Exception as e:
         return {
             'statusCode': 500,
             'body': json.dumps({'error': str(e)})
