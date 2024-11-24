@@ -1,0 +1,54 @@
+org: labibahtrd
+app: task1
+service: CirclTask
+
+provider:
+  name: aws
+  runtime: python3.12
+  iam:
+    role:
+      statements:
+        # Allow functions to list all buckets
+        - Effect: Allow
+          Action: 's3:ListBucket'
+          Resource: '*'
+        # Allow functions to read/write objects in a bucket
+        - Effect: Allow
+          Action:
+            - 's3:GetObject'
+            - 's3:PutObject'
+          Resource:
+            - 'arn:aws:s3:::circltask-s3-bucket-dev/*'
+
+  region: us-east-1
+  environment:
+    S3_BUCKET_NAME: circltask-s3-bucket-dev
+
+functions:
+  uploadCustomer:
+    handler: CirclTask/handler.uploadCustomer
+    events:
+      - httpApi:
+          path: /uploadCustomer
+          method: post
+          cors: true
+
+  getCustomers:
+    handler: CirclTask/handler.getCustomers
+    events:
+      - httpApi:
+          path: /getCustomers
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    CustomerS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: circltask-s3-bucket-dev
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true

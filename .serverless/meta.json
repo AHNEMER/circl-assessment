@@ -1,0 +1,1178 @@
+{
+  "/Users/ahmedalnemer/Desktop/Work stuff/curcile assessment": {
+    "versionSfCore": null,
+    "versionFramework": "4.4.11",
+    "isWithinCompose": false,
+    "isCompose": false,
+    "composeOrgName": null,
+    "composeResolverProviders": {
+      "default-aws-credential-resolver": "<REDACTED>",
+      "sls": {
+        "instance": {
+          "credentials": "<REDACTED>",
+          "serviceConfigFile": {
+            "org": "labibahtrd",
+            "app": "task1",
+            "service": "CirclTask",
+            "provider": {
+              "name": "aws",
+              "runtime": "python3.12",
+              "iam": {
+                "role": {
+                  "statements": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:ListBucket"
+                      ],
+                      "Resource": "*"
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "s3:GetObject",
+                        "s3:PutObject"
+                      ],
+                      "Resource": "arn:aws:s3:::circltask-s3-bucket-dev/*"
+                    }
+                  ]
+                }
+              },
+              "region": "us-east-1",
+              "environment": {
+                "S3_BUCKET_NAME": "circltask-s3-bucket-dev"
+              },
+              "stage": "dev",
+              "versionFunctions": true,
+              "compiledCloudFormationTemplate": {
+                "AWSTemplateFormatVersion": "2010-09-09",
+                "Description": "The AWS CloudFormation template for this Serverless application",
+                "Resources": {
+                  "UploadCustomerLogGroup": {
+                    "Type": "AWS::Logs::LogGroup",
+                    "Properties": {
+                      "LogGroupName": "/aws/lambda/CirclTask-dev-uploadCustomer"
+                    }
+                  },
+                  "GetCustomersLogGroup": {
+                    "Type": "AWS::Logs::LogGroup",
+                    "Properties": {
+                      "LogGroupName": "/aws/lambda/CirclTask-dev-getCustomers"
+                    }
+                  },
+                  "IamRoleLambdaExecution": {
+                    "Type": "AWS::IAM::Role",
+                    "Properties": {
+                      "AssumeRolePolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                          {
+                            "Effect": "Allow",
+                            "Principal": {
+                              "Service": [
+                                "lambda.amazonaws.com"
+                              ]
+                            },
+                            "Action": [
+                              "sts:AssumeRole"
+                            ]
+                          }
+                        ]
+                      },
+                      "Policies": [
+                        {
+                          "PolicyName": {
+                            "Fn::Join": [
+                              "-",
+                              [
+                                "CirclTask",
+                                "dev",
+                                "lambda"
+                              ]
+                            ]
+                          },
+                          "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                              {
+                                "Effect": "Allow",
+                                "Action": [
+                                  "logs:CreateLogStream",
+                                  "logs:CreateLogGroup",
+                                  "logs:TagResource"
+                                ],
+                                "Resource": [
+                                  {
+                                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/CirclTask-dev*:*"
+                                  }
+                                ]
+                              },
+                              {
+                                "Effect": "Allow",
+                                "Action": [
+                                  "logs:PutLogEvents"
+                                ],
+                                "Resource": [
+                                  {
+                                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/CirclTask-dev*:*:*"
+                                  }
+                                ]
+                              },
+                              {
+                                "Effect": "Allow",
+                                "Action": [
+                                  "s3:ListBucket"
+                                ],
+                                "Resource": "*"
+                              },
+                              {
+                                "Effect": "Allow",
+                                "Action": [
+                                  "s3:GetObject",
+                                  "s3:PutObject"
+                                ],
+                                "Resource": "arn:aws:s3:::circltask-s3-bucket-dev/*"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "Path": "/",
+                      "RoleName": {
+                        "Fn::Join": [
+                          "-",
+                          [
+                            "CirclTask",
+                            "dev",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "lambdaRole"
+                          ]
+                        ]
+                      }
+                    }
+                  },
+                  "UploadCustomerLambdaFunction": {
+                    "Type": "AWS::Lambda::Function",
+                    "Properties": {
+                      "Code": {
+                        "S3Bucket": "serverless-framework-deployments-us-east-1-0ac85a8a-5e23",
+                        "S3Key": "serverless/CirclTask/dev/1732477599182-2024-11-24T19:46:39.182Z/CirclTask.zip"
+                      },
+                      "Handler": "CirclTask/handler.uploadCustomer",
+                      "Runtime": "python3.12",
+                      "FunctionName": "CirclTask-dev-uploadCustomer",
+                      "MemorySize": 1024,
+                      "Timeout": 6,
+                      "Environment": {
+                        "Variables": {
+                          "S3_BUCKET_NAME": "circltask-s3-bucket-dev"
+                        }
+                      },
+                      "Role": {
+                        "Fn::GetAtt": [
+                          "IamRoleLambdaExecution",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "DependsOn": [
+                      "UploadCustomerLogGroup"
+                    ]
+                  },
+                  "GetCustomersLambdaFunction": {
+                    "Type": "AWS::Lambda::Function",
+                    "Properties": {
+                      "Code": {
+                        "S3Bucket": "serverless-framework-deployments-us-east-1-0ac85a8a-5e23",
+                        "S3Key": "serverless/CirclTask/dev/1732477599182-2024-11-24T19:46:39.182Z/CirclTask.zip"
+                      },
+                      "Handler": "CirclTask/handler.getCustomers",
+                      "Runtime": "python3.12",
+                      "FunctionName": "CirclTask-dev-getCustomers",
+                      "MemorySize": 1024,
+                      "Timeout": 6,
+                      "Environment": {
+                        "Variables": {
+                          "S3_BUCKET_NAME": "circltask-s3-bucket-dev"
+                        }
+                      },
+                      "Role": {
+                        "Fn::GetAtt": [
+                          "IamRoleLambdaExecution",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "DependsOn": [
+                      "GetCustomersLogGroup"
+                    ]
+                  },
+                  "UploadCustomerLambdaVersion6VKHdnRHJQj6R6omqfxzjnSSvTqosismCaAvNTaRo": {
+                    "Type": "AWS::Lambda::Version",
+                    "DeletionPolicy": "Retain",
+                    "Properties": {
+                      "FunctionName": {
+                        "Ref": "UploadCustomerLambdaFunction"
+                      },
+                      "CodeSha256": "UcpOKZxzgd/mFXQwI8xu5Wp+Xn8iLiOVfBodeuxr3Ds="
+                    }
+                  },
+                  "GetCustomersLambdaVersionUYmHzPCHdNWdNrk0hVIIHMVzMlRKXTZDsJkzD0ndI": {
+                    "Type": "AWS::Lambda::Version",
+                    "DeletionPolicy": "Retain",
+                    "Properties": {
+                      "FunctionName": {
+                        "Ref": "GetCustomersLambdaFunction"
+                      },
+                      "CodeSha256": "UcpOKZxzgd/mFXQwI8xu5Wp+Xn8iLiOVfBodeuxr3Ds="
+                    }
+                  },
+                  "HttpApi": {
+                    "Type": "AWS::ApiGatewayV2::Api",
+                    "Properties": {
+                      "Name": "dev-CirclTask",
+                      "ProtocolType": "HTTP"
+                    }
+                  },
+                  "HttpApiStage": {
+                    "Type": "AWS::ApiGatewayV2::Stage",
+                    "Properties": {
+                      "ApiId": {
+                        "Ref": "HttpApi"
+                      },
+                      "StageName": "$default",
+                      "AutoDeploy": true,
+                      "DefaultRouteSettings": {
+                        "DetailedMetricsEnabled": false
+                      }
+                    }
+                  },
+                  "UploadCustomerLambdaPermissionHttpApi": {
+                    "Type": "AWS::Lambda::Permission",
+                    "Properties": {
+                      "FunctionName": {
+                        "Fn::GetAtt": [
+                          "UploadCustomerLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "Action": "lambda:InvokeFunction",
+                      "Principal": "apigateway.amazonaws.com",
+                      "SourceArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "HttpApi"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      }
+                    }
+                  },
+                  "HttpApiIntegrationUploadCustomer": {
+                    "Type": "AWS::ApiGatewayV2::Integration",
+                    "Properties": {
+                      "ApiId": {
+                        "Ref": "HttpApi"
+                      },
+                      "IntegrationType": "AWS_PROXY",
+                      "IntegrationUri": {
+                        "Fn::GetAtt": [
+                          "UploadCustomerLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "PayloadFormatVersion": "2.0",
+                      "TimeoutInMillis": 30000
+                    }
+                  },
+                  "HttpApiRoutePostUploadcustomer": {
+                    "Type": "AWS::ApiGatewayV2::Route",
+                    "Properties": {
+                      "ApiId": {
+                        "Ref": "HttpApi"
+                      },
+                      "RouteKey": "POST /uploadCustomer",
+                      "Target": {
+                        "Fn::Join": [
+                          "/",
+                          [
+                            "integrations",
+                            {
+                              "Ref": "HttpApiIntegrationUploadCustomer"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "DependsOn": "HttpApiIntegrationUploadCustomer"
+                  },
+                  "GetCustomersLambdaPermissionHttpApi": {
+                    "Type": "AWS::Lambda::Permission",
+                    "Properties": {
+                      "FunctionName": {
+                        "Fn::GetAtt": [
+                          "GetCustomersLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "Action": "lambda:InvokeFunction",
+                      "Principal": "apigateway.amazonaws.com",
+                      "SourceArn": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":execute-api:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":",
+                            {
+                              "Ref": "AWS::AccountId"
+                            },
+                            ":",
+                            {
+                              "Ref": "HttpApi"
+                            },
+                            "/*"
+                          ]
+                        ]
+                      }
+                    }
+                  },
+                  "HttpApiIntegrationGetCustomers": {
+                    "Type": "AWS::ApiGatewayV2::Integration",
+                    "Properties": {
+                      "ApiId": {
+                        "Ref": "HttpApi"
+                      },
+                      "IntegrationType": "AWS_PROXY",
+                      "IntegrationUri": {
+                        "Fn::GetAtt": [
+                          "GetCustomersLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "PayloadFormatVersion": "2.0",
+                      "TimeoutInMillis": 30000
+                    }
+                  },
+                  "HttpApiRouteGetGetcustomers": {
+                    "Type": "AWS::ApiGatewayV2::Route",
+                    "Properties": {
+                      "ApiId": {
+                        "Ref": "HttpApi"
+                      },
+                      "RouteKey": "GET /getCustomers",
+                      "Target": {
+                        "Fn::Join": [
+                          "/",
+                          [
+                            "integrations",
+                            {
+                              "Ref": "HttpApiIntegrationGetCustomers"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "DependsOn": "HttpApiIntegrationGetCustomers"
+                  },
+                  "CustomerS3Bucket": {
+                    "Type": "AWS::S3::Bucket",
+                    "Properties": {
+                      "BucketName": "circltask-s3-bucket-dev",
+                      "PublicAccessBlockConfiguration": {
+                        "BlockPublicAcls": true,
+                        "BlockPublicPolicy": true,
+                        "IgnorePublicAcls": true,
+                        "RestrictPublicBuckets": true
+                      }
+                    }
+                  }
+                },
+                "Outputs": {
+                  "ServerlessDeploymentBucketName": {
+                    "Value": "serverless-framework-deployments-us-east-1-0ac85a8a-5e23",
+                    "Export": {
+                      "Name": "sls-CirclTask-dev-ServerlessDeploymentBucketName"
+                    }
+                  },
+                  "UploadCustomerLambdaFunctionQualifiedArn": {
+                    "Description": "Current Lambda function version",
+                    "Value": {
+                      "Ref": "UploadCustomerLambdaVersion6VKHdnRHJQj6R6omqfxzjnSSvTqosismCaAvNTaRo"
+                    },
+                    "Export": {
+                      "Name": "sls-CirclTask-dev-UploadCustomerLambdaFunctionQualifiedArn"
+                    }
+                  },
+                  "GetCustomersLambdaFunctionQualifiedArn": {
+                    "Description": "Current Lambda function version",
+                    "Value": {
+                      "Ref": "GetCustomersLambdaVersionUYmHzPCHdNWdNrk0hVIIHMVzMlRKXTZDsJkzD0ndI"
+                    },
+                    "Export": {
+                      "Name": "sls-CirclTask-dev-GetCustomersLambdaFunctionQualifiedArn"
+                    }
+                  },
+                  "HttpApiId": {
+                    "Description": "Id of the HTTP API",
+                    "Value": {
+                      "Ref": "HttpApi"
+                    },
+                    "Export": {
+                      "Name": "sls-CirclTask-dev-HttpApiId"
+                    }
+                  },
+                  "HttpApiUrl": {
+                    "Description": "URL of the HTTP API",
+                    "Value": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://",
+                          {
+                            "Ref": "HttpApi"
+                          },
+                          ".execute-api.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          }
+                        ]
+                      ]
+                    },
+                    "Export": {
+                      "Name": "sls-CirclTask-dev-HttpApiUrl"
+                    }
+                  }
+                }
+              },
+              "vpc": {}
+            },
+            "functions": {
+              "uploadCustomer": {
+                "handler": "CirclTask/handler.uploadCustomer",
+                "events": [
+                  {
+                    "httpApi": {
+                      "path": "/uploadCustomer",
+                      "method": "post",
+                      "cors": true
+                    },
+                    "resolvedMethod": "POST",
+                    "resolvedPath": "/uploadCustomer"
+                  }
+                ],
+                "name": "CirclTask-dev-uploadCustomer",
+                "package": {},
+                "memory": 1024,
+                "timeout": 6,
+                "runtime": "python3.12",
+                "vpc": {},
+                "versionLogicalId": "UploadCustomerLambdaVersion6VKHdnRHJQj6R6omqfxzjnSSvTqosismCaAvNTaRo"
+              },
+              "getCustomers": {
+                "handler": "CirclTask/handler.getCustomers",
+                "events": [
+                  {
+                    "httpApi": {
+                      "path": "/getCustomers",
+                      "method": "get",
+                      "cors": true
+                    },
+                    "resolvedMethod": "GET",
+                    "resolvedPath": "/getCustomers"
+                  }
+                ],
+                "name": "CirclTask-dev-getCustomers",
+                "package": {},
+                "memory": 1024,
+                "timeout": 6,
+                "runtime": "python3.12",
+                "vpc": {},
+                "versionLogicalId": "GetCustomersLambdaVersionUYmHzPCHdNWdNrk0hVIIHMVzMlRKXTZDsJkzD0ndI"
+              }
+            },
+            "resources": {
+              "Resources": {
+                "CustomerS3Bucket": {
+                  "Type": "AWS::S3::Bucket",
+                  "Properties": {
+                    "BucketName": "circltask-s3-bucket-dev",
+                    "PublicAccessBlockConfiguration": {
+                      "BlockPublicAcls": true,
+                      "BlockPublicPolicy": true,
+                      "IgnorePublicAcls": true,
+                      "RestrictPublicBuckets": true
+                    }
+                  }
+                }
+              },
+              "Outputs": {}
+            }
+          },
+          "configFileDirPath": "/Users/ahmedalnemer/Desktop/Work stuff/curcile assessment",
+          "config": {
+            "type": "sls"
+          },
+          "options": {},
+          "stage": "dev",
+          "dashboard": {
+            "aws": {
+              "accessKeyId": "<REDACTED>",
+              "secretAccessKey": "<REDACTED>",
+              "sessionToken": "<REDACTED>",
+              "$source": {
+                "CREDENTIALS_CODE": "<REDACTED>"
+              }
+            },
+            "params": null,
+            "accessKey": "<REDACTED>"
+          },
+          "logger": {
+            "namespace": "s:core:resolver:sls",
+            "prefix": null,
+            "prefixColor": null
+          },
+          "_credentialsPromise": "<REDACTED>"
+        },
+        "resolvers": {}
+      }
+    },
+    "composeServiceName": null,
+    "servicePath": "/Users/ahmedalnemer/Desktop/Work stuff/curcile assessment",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "org": "labibahtrd",
+      "app": "task1",
+      "service": "CirclTask",
+      "provider": {
+        "name": "aws",
+        "runtime": "python3.12",
+        "iam": {
+          "role": {
+            "statements": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "s3:ListBucket"
+                ],
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "s3:GetObject",
+                  "s3:PutObject"
+                ],
+                "Resource": "arn:aws:s3:::circltask-s3-bucket-dev/*"
+              }
+            ]
+          }
+        },
+        "region": "us-east-1",
+        "environment": {
+          "S3_BUCKET_NAME": "circltask-s3-bucket-dev"
+        },
+        "stage": "dev",
+        "versionFunctions": true,
+        "compiledCloudFormationTemplate": {
+          "AWSTemplateFormatVersion": "2010-09-09",
+          "Description": "The AWS CloudFormation template for this Serverless application",
+          "Resources": {
+            "UploadCustomerLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/CirclTask-dev-uploadCustomer"
+              }
+            },
+            "GetCustomersLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/CirclTask-dev-getCustomers"
+              }
+            },
+            "IamRoleLambdaExecution": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": [
+                          "lambda.amazonaws.com"
+                        ]
+                      },
+                      "Action": [
+                        "sts:AssumeRole"
+                      ]
+                    }
+                  ]
+                },
+                "Policies": [
+                  {
+                    "PolicyName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          "CirclTask",
+                          "dev",
+                          "lambda"
+                        ]
+                      ]
+                    },
+                    "PolicyDocument": {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:CreateLogStream",
+                            "logs:CreateLogGroup",
+                            "logs:TagResource"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/CirclTask-dev*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:PutLogEvents"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/CirclTask-dev*:*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "s3:ListBucket"
+                          ],
+                          "Resource": "*"
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "s3:GetObject",
+                            "s3:PutObject"
+                          ],
+                          "Resource": "arn:aws:s3:::circltask-s3-bucket-dev/*"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "Path": "/",
+                "RoleName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "CirclTask",
+                      "dev",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "lambdaRole"
+                    ]
+                  ]
+                }
+              }
+            },
+            "UploadCustomerLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-us-east-1-0ac85a8a-5e23",
+                  "S3Key": "serverless/CirclTask/dev/1732477599182-2024-11-24T19:46:39.182Z/CirclTask.zip"
+                },
+                "Handler": "CirclTask/handler.uploadCustomer",
+                "Runtime": "python3.12",
+                "FunctionName": "CirclTask-dev-uploadCustomer",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "S3_BUCKET_NAME": "circltask-s3-bucket-dev"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "UploadCustomerLogGroup"
+              ]
+            },
+            "GetCustomersLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-us-east-1-0ac85a8a-5e23",
+                  "S3Key": "serverless/CirclTask/dev/1732477599182-2024-11-24T19:46:39.182Z/CirclTask.zip"
+                },
+                "Handler": "CirclTask/handler.getCustomers",
+                "Runtime": "python3.12",
+                "FunctionName": "CirclTask-dev-getCustomers",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "S3_BUCKET_NAME": "circltask-s3-bucket-dev"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "GetCustomersLogGroup"
+              ]
+            },
+            "UploadCustomerLambdaVersion6VKHdnRHJQj6R6omqfxzjnSSvTqosismCaAvNTaRo": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "UploadCustomerLambdaFunction"
+                },
+                "CodeSha256": "UcpOKZxzgd/mFXQwI8xu5Wp+Xn8iLiOVfBodeuxr3Ds="
+              }
+            },
+            "GetCustomersLambdaVersionUYmHzPCHdNWdNrk0hVIIHMVzMlRKXTZDsJkzD0ndI": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "GetCustomersLambdaFunction"
+                },
+                "CodeSha256": "UcpOKZxzgd/mFXQwI8xu5Wp+Xn8iLiOVfBodeuxr3Ds="
+              }
+            },
+            "HttpApi": {
+              "Type": "AWS::ApiGatewayV2::Api",
+              "Properties": {
+                "Name": "dev-CirclTask",
+                "ProtocolType": "HTTP"
+              }
+            },
+            "HttpApiStage": {
+              "Type": "AWS::ApiGatewayV2::Stage",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "StageName": "$default",
+                "AutoDeploy": true,
+                "DefaultRouteSettings": {
+                  "DetailedMetricsEnabled": false
+                }
+              }
+            },
+            "UploadCustomerLambdaPermissionHttpApi": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "UploadCustomerLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "HttpApi"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              }
+            },
+            "HttpApiIntegrationUploadCustomer": {
+              "Type": "AWS::ApiGatewayV2::Integration",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "IntegrationType": "AWS_PROXY",
+                "IntegrationUri": {
+                  "Fn::GetAtt": [
+                    "UploadCustomerLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "PayloadFormatVersion": "2.0",
+                "TimeoutInMillis": 30000
+              }
+            },
+            "HttpApiRoutePostUploadcustomer": {
+              "Type": "AWS::ApiGatewayV2::Route",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "RouteKey": "POST /uploadCustomer",
+                "Target": {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      "integrations",
+                      {
+                        "Ref": "HttpApiIntegrationUploadCustomer"
+                      }
+                    ]
+                  ]
+                }
+              },
+              "DependsOn": "HttpApiIntegrationUploadCustomer"
+            },
+            "GetCustomersLambdaPermissionHttpApi": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "GetCustomersLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "HttpApi"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              }
+            },
+            "HttpApiIntegrationGetCustomers": {
+              "Type": "AWS::ApiGatewayV2::Integration",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "IntegrationType": "AWS_PROXY",
+                "IntegrationUri": {
+                  "Fn::GetAtt": [
+                    "GetCustomersLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "PayloadFormatVersion": "2.0",
+                "TimeoutInMillis": 30000
+              }
+            },
+            "HttpApiRouteGetGetcustomers": {
+              "Type": "AWS::ApiGatewayV2::Route",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "RouteKey": "GET /getCustomers",
+                "Target": {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      "integrations",
+                      {
+                        "Ref": "HttpApiIntegrationGetCustomers"
+                      }
+                    ]
+                  ]
+                }
+              },
+              "DependsOn": "HttpApiIntegrationGetCustomers"
+            },
+            "CustomerS3Bucket": {
+              "Type": "AWS::S3::Bucket",
+              "Properties": {
+                "BucketName": "circltask-s3-bucket-dev",
+                "PublicAccessBlockConfiguration": {
+                  "BlockPublicAcls": true,
+                  "BlockPublicPolicy": true,
+                  "IgnorePublicAcls": true,
+                  "RestrictPublicBuckets": true
+                }
+              }
+            }
+          },
+          "Outputs": {
+            "ServerlessDeploymentBucketName": {
+              "Value": "serverless-framework-deployments-us-east-1-0ac85a8a-5e23",
+              "Export": {
+                "Name": "sls-CirclTask-dev-ServerlessDeploymentBucketName"
+              }
+            },
+            "UploadCustomerLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "UploadCustomerLambdaVersion6VKHdnRHJQj6R6omqfxzjnSSvTqosismCaAvNTaRo"
+              },
+              "Export": {
+                "Name": "sls-CirclTask-dev-UploadCustomerLambdaFunctionQualifiedArn"
+              }
+            },
+            "GetCustomersLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "GetCustomersLambdaVersionUYmHzPCHdNWdNrk0hVIIHMVzMlRKXTZDsJkzD0ndI"
+              },
+              "Export": {
+                "Name": "sls-CirclTask-dev-GetCustomersLambdaFunctionQualifiedArn"
+              }
+            },
+            "HttpApiId": {
+              "Description": "Id of the HTTP API",
+              "Value": {
+                "Ref": "HttpApi"
+              },
+              "Export": {
+                "Name": "sls-CirclTask-dev-HttpApiId"
+              }
+            },
+            "HttpApiUrl": {
+              "Description": "URL of the HTTP API",
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    ".execute-api.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    }
+                  ]
+                ]
+              },
+              "Export": {
+                "Name": "sls-CirclTask-dev-HttpApiUrl"
+              }
+            }
+          }
+        },
+        "vpc": {}
+      },
+      "functions": {
+        "uploadCustomer": {
+          "handler": "CirclTask/handler.uploadCustomer",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/uploadCustomer",
+                "method": "post",
+                "cors": true
+              },
+              "resolvedMethod": "POST",
+              "resolvedPath": "/uploadCustomer"
+            }
+          ],
+          "name": "CirclTask-dev-uploadCustomer",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "python3.12",
+          "vpc": {},
+          "versionLogicalId": "UploadCustomerLambdaVersion6VKHdnRHJQj6R6omqfxzjnSSvTqosismCaAvNTaRo"
+        },
+        "getCustomers": {
+          "handler": "CirclTask/handler.getCustomers",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/getCustomers",
+                "method": "get",
+                "cors": true
+              },
+              "resolvedMethod": "GET",
+              "resolvedPath": "/getCustomers"
+            }
+          ],
+          "name": "CirclTask-dev-getCustomers",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "python3.12",
+          "vpc": {},
+          "versionLogicalId": "GetCustomersLambdaVersionUYmHzPCHdNWdNrk0hVIIHMVzMlRKXTZDsJkzD0ndI"
+        }
+      },
+      "resources": {
+        "Resources": {
+          "CustomerS3Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketName": "circltask-s3-bucket-dev",
+              "PublicAccessBlockConfiguration": {
+                "BlockPublicAcls": true,
+                "BlockPublicPolicy": true,
+                "IgnorePublicAcls": true,
+                "RestrictPublicBuckets": true
+              }
+            }
+          }
+        },
+        "Outputs": {}
+      }
+    },
+    "serviceRawFile": "org: labibahtrd\napp: task1\nservice: CirclTask\n\nprovider:\n  name: aws\n  runtime: python3.12\n  iam:\n    role:\n      statements:\n        - Effect: Allow\n          Action: 's3:ListBucket'\n          Resource: '*'\n        # Allow functions to read/write objects in a bucket\n        - Effect: Allow\n          Action:\n            - 's3:GetObject'\n            - 's3:PutObject'\n          Resource:\n            - 'arn:aws:s3:::circltask-s3-bucket-dev/*'\n\n  region: us-east-1\n  environment:\n    S3_BUCKET_NAME: circltask-s3-bucket-dev\n\nfunctions:\n  uploadCustomer:\n    handler: CirclTask/handler.uploadCustomer\n    events:\n      - httpApi:\n          path: /uploadCustomer\n          method: post\n          cors: true\n\n  getCustomers:\n    handler: CirclTask/handler.getCustomers\n    events:\n      - httpApi:\n          path: /getCustomers\n          method: get\n          cors: true\n\nresources:\n  Resources:\n    CustomerS3Bucket:\n      Type: AWS::S3::Bucket\n      Properties:\n        BucketName: circltask-s3-bucket-dev\n        PublicAccessBlockConfiguration:\n          BlockPublicAcls: true\n          BlockPublicPolicy: true\n          IgnorePublicAcls: true\n          RestrictPublicBuckets: true",
+    "command": [
+      "deploy"
+    ],
+    "options": {},
+    "error": null,
+    "params": {},
+    "machineId": "adebecb2c355e768ce538183e17f5b74",
+    "stage": "dev",
+    "accessKeyV2": "<REDACTED>",
+    "accessKeyV1": "<REDACTED>",
+    "orgId": "d8497c2d-d294-44d1-87ff-ac6565072ed1",
+    "orgName": "labibahtrd",
+    "userId": "4QQhfXkRHM2T6vCrKG",
+    "dashboard": {
+      "isEnabledForService": true,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": {
+        "providers": true,
+        "monitoring": false
+      },
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": "dgdpsTLkLVHR1CVf8L",
+      "serviceProvider": {
+        "accessKeyId": "<REDACTED>",
+        "secretAccessKey": "<REDACTED>",
+        "sessionToken": "<REDACTED>",
+        "$source": {
+          "CREDENTIALS_CODE": "<REDACTED>"
+        }
+      },
+      "instanceParameters": null
+    },
+    "userName": "labibahtrd",
+    "subscription": null,
+    "userEmail": "ahnemerah@gmail.com",
+    "serviceProviderAwsRegion": "us-east-1",
+    "serviceProviderAwsCredentials": "<REDACTED>",
+    "serviceProviderAwsAccountId": "060795936663",
+    "projectType": "traditional",
+    "versionSf": "4.4.11",
+    "serviceProviderAwsCfStackName": "CirclTask-dev",
+    "integrations": {},
+    "serviceUniqueId": "arn:aws:cloudformation:us-east-1:060795936663:stack/CirclTask-dev/e21a19d0-aa7d-11ef-848f-0afffe7eb57d",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:060795936663:stack/CirclTask-dev/e21a19d0-aa7d-11ef-848f-0afffe7eb57d",
+    "serviceProviderAwsCfStackCreated": "2024-11-24T16:05:11.388Z",
+    "serviceProviderAwsCfStackUpdated": "2024-11-24T19:47:34.259Z",
+    "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "GetCustomersLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:060795936663:function:CirclTask-dev-getCustomers:3",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-CirclTask-dev-GetCustomersLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "UploadCustomerLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:060795936663:function:CirclTask-dev-uploadCustomer:3",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-CirclTask-dev-UploadCustomerLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "HttpApiId",
+        "OutputValue": "ikt3bvapwe",
+        "Description": "Id of the HTTP API",
+        "ExportName": "sls-CirclTask-dev-HttpApiId"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "serverless-framework-deployments-us-east-1-0ac85a8a-5e23",
+        "ExportName": "sls-CirclTask-dev-ServerlessDeploymentBucketName"
+      },
+      {
+        "OutputKey": "HttpApiUrl",
+        "OutputValue": "https://ikt3bvapwe.execute-api.us-east-1.amazonaws.com",
+        "Description": "URL of the HTTP API",
+        "ExportName": "sls-CirclTask-dev-HttpApiUrl"
+      }
+    ]
+  }
+}
