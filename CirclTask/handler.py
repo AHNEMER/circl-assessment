@@ -5,7 +5,7 @@ from botocore.exceptions import ClientError
 
 s3 = boto3.client('s3')
 bucket_name = os.environ['S3_BUCKET_NAME']
-
+#jsjsjsjsjsjsjs
 def uploadCustomer(event, context):
     try:
         # Parse the JSON body from the incoming event
