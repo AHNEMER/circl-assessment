@@ -1,9 +1,7 @@
-name: Deploy master branch
+name: Deploy Workflow
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
   deploy:
@@ -11,16 +9,21 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [23.3.0]
+        node-version: [23.3.0] # Change this to 18.x or 16.x if using LTS
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: npm ci
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Debug npm logs
+        run: cat /home/runner/.npm/_logs/*.log
 
       - name: Serverless Deploy
         uses: serverless/github-action@v3
