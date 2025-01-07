@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [23.3.0] # Change this to 18.x or 16.x if using LTS
+        node-version: [18.x] # Update as needed
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -28,7 +28,7 @@ jobs:
       - name: Serverless Deploy
         uses: serverless/github-action@v3
         with:
-          args: deploy
+          args: deploy --debug
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
