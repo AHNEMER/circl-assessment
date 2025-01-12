@@ -1,0 +1,33 @@
+version: 2
+updates:
+  # For Node.js dependencies, including AWS SDK
+  - package-ecosystem: "npm"
+    directory: "/" # Location of the `package.json` file
+    schedule:
+      interval: "weekly" # Check for updates weekly
+    ignore:
+      # Example: Ignore updates for major versions of aws-sdk
+      - dependency-name: "aws-sdk"
+        update-types: ["version-update:semver-major"]
+
+  # For Python dependencies, including AWS libraries like boto3
+  - package-ecosystem: "pip"
+    directory: "/" # Location of the `requirements.txt` file
+    schedule:
+      interval: "weekly" # Check for updates weekly
+    ignore:
+      # Example: Ignore updates for major versions of boto3
+      - dependency-name: "boto3"
+        update-types: ["version-update:semver-major"]
+
+  # For Terraform dependencies if you're managing AWS infrastructure via IaC
+  - package-ecosystem: "terraform"
+    directory: "/" # Location of Terraform files
+    schedule:
+      interval: "weekly" # Check for updates weekly
+
+  # For GitHub Actions dependencies (e.g., aws-actions/configure-aws-credentials)
+  - package-ecosystem: "github-actions"
+    directory: "/" # Root directory for workflows
+    schedule:
+      interval: "weekly" # Check for updates weekly
