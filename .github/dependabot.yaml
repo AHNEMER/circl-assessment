@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # For Node.js dependencies, including AWS SDK
+  # For Node.js dependencies, including AWS SDK.
   - package-ecosystem: "npm"
     directory: "/" # Location of the `package.json` file
     schedule:
