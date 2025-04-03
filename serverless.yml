@@ -4,6 +4,7 @@ service: CirclTask
 
 
 
+
 provider:
   name: aws
   runtime: python3.12
@@ -25,6 +26,10 @@ provider:
   region: us-east-1
   environment:
     S3_BUCKET_NAME: circltask-s3-bucket-dev
+
+
+plugins:
+  - serverless-aws-alias
 
 functions:
   uploadCustomer:
