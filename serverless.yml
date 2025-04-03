@@ -28,8 +28,8 @@ provider:
     S3_BUCKET_NAME: circltask-s3-bucket-dev
 
 
-plugins:
-  - serverless-aws-alias
+# plugins:
+#   - serverless-aws-alias
 
 functions:
   uploadCustomer:
@@ -39,6 +39,8 @@ functions:
           path: /uploadCustomer
           method: post
           cors: true
+    aliases:
+    - FirstFunction
 
 
   getCustomers:
