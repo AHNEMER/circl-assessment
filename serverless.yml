@@ -4,9 +4,6 @@ service: CirclTask
 
 
 
-plugins:
-  - serverless-aws-alias
-
 provider:
   name: aws
   runtime: python3.12
