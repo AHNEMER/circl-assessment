@@ -39,8 +39,7 @@ functions:
           path: /uploadCustomer
           method: post
           cors: true
-    aliases:
-    - test
+
 
 
   getCustomers:
