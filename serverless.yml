@@ -40,7 +40,7 @@ functions:
           method: post
           cors: true
     aliases:
-    - FirstFunction
+    - test
 
 
   getCustomers:
