@@ -2,6 +2,11 @@ org: labibahtrd
 app: task1
 service: CirclTask
 
+
+
+plugins:
+  - serverless-aws-alias
+
 provider:
   name: aws
   runtime: python3.12
@@ -32,6 +37,7 @@ functions:
           path: /uploadCustomer
           method: post
           cors: true
+
 
   getCustomers:
     handler: CirclTask/handler.getCustomers
