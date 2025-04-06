@@ -2,6 +2,75 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "The AWS CloudFormation template for this Serverless application",
   "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ServerlessDeploymentBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ServerlessDeploymentBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
     "UploadCustomerLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
@@ -52,8 +121,7 @@
                   "Effect": "Allow",
                   "Action": [
                     "logs:CreateLogStream",
-                    "logs:CreateLogGroup",
-                    "logs:TagResource"
+                    "logs:CreateLogGroup"
                   ],
                   "Resource": [
                     {
@@ -107,15 +175,69 @@
         }
       }
     },
+    "EnterpriseLogAccessIamRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "arn:aws:iam::802587217904:root"
+              },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": {
+                  "sts:ExternalId": "ServerlessEnterprise-d8497c2d-d294-44d1-87ff-ac6565072ed1"
+                }
+              }
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "LogFilterAccess",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:FilterLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "UploadCustomerLogGroup",
+                        "Arn"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "GetCustomersLogGroup",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
     "UploadCustomerLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": "serverless-framework-deployments-us-east-1-0ac85a8a-5e23",
-          "S3Key": "serverless/CirclTask/dev/1732477599182-2024-11-24T19:46:39.182Z/CirclTask.zip"
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/CirclTask/dev/1743950891080-2025-04-06T14:48:11.080Z/CirclTask.zip"
         },
-        "Handler": "CirclTask/handler.uploadCustomer",
-        "Runtime": "python3.12",
+        "Handler": "s_uploadCustomer.handler",
+        "Runtime": "python3.9",
         "FunctionName": "CirclTask-dev-uploadCustomer",
         "MemorySize": 1024,
         "Timeout": 6,
@@ -139,11 +261,13 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "S3Bucket": "serverless-framework-deployments-us-east-1-0ac85a8a-5e23",
-          "S3Key": "serverless/CirclTask/dev/1732477599182-2024-11-24T19:46:39.182Z/CirclTask.zip"
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/CirclTask/dev/1743950891080-2025-04-06T14:48:11.080Z/CirclTask.zip"
         },
-        "Handler": "CirclTask/handler.getCustomers",
-        "Runtime": "python3.12",
+        "Handler": "s_getCustomers.handler",
+        "Runtime": "python3.9",
         "FunctionName": "CirclTask-dev-getCustomers",
         "MemorySize": 1024,
         "Timeout": 6,
@@ -163,31 +287,55 @@
         "GetCustomersLogGroup"
       ]
     },
-    "UploadCustomerLambdaVersion6VKHdnRHJQj6R6omqfxzjnSSvTqosismCaAvNTaRo": {
-      "Type": "AWS::Lambda::Version",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "UploadCustomerLambdaFunction"
-        },
-        "CodeSha256": "UcpOKZxzgd/mFXQwI8xu5Wp+Xn8iLiOVfBodeuxr3Ds="
-      }
-    },
-    "GetCustomersLambdaVersionUYmHzPCHdNWdNrk0hVIIHMVzMlRKXTZDsJkzD0ndI": {
+    "GetCustomersLambdaVersionnrYFhqhkWPreCDHUJqUUe7djA8mLujaJM23Rf0Xi3oM": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetCustomersLambdaFunction"
         },
-        "CodeSha256": "UcpOKZxzgd/mFXQwI8xu5Wp+Xn8iLiOVfBodeuxr3Ds="
+        "CodeSha256": "kDIVpghlwdZJD4DlJYSaJz8IP7yF4xJbP685LJNpODo="
+      }
+    },
+    "UploadCustomerLambdaVersiond120FpzGenkofBbAWGQdUbqKrPZE80MmVy7X8DIafM": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "UploadCustomerLambdaFunction"
+        },
+        "CodeSha256": "kDIVpghlwdZJD4DlJYSaJz8IP7yF4xJbP685LJNpODo="
       }
     },
     "HttpApi": {
       "Type": "AWS::ApiGatewayV2::Api",
       "Properties": {
         "Name": "dev-CirclTask",
-        "ProtocolType": "HTTP"
+        "ProtocolType": "HTTP",
+        "CorsConfiguration": {
+          "AllowHeaders": [
+            "Content-Type",
+            "X-Amz-Date",
+            "Authorization",
+            "X-Api-Key",
+            "X-Amz-Security-Token",
+            "X-Amz-User-Agent"
+          ],
+          "AllowMethods": [
+            "OPTIONS",
+            "POST",
+            "GET"
+          ],
+          "AllowOrigins": [
+            "*"
+          ]
+        }
+      }
+    },
+    "HttpApiLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/http-api/CirclTask-dev"
       }
     },
     "HttpApiStage": {
@@ -200,8 +348,18 @@
         "AutoDeploy": true,
         "DefaultRouteSettings": {
           "DetailedMetricsEnabled": false
+        },
+        "AccessLogSettings": {
+          "DestinationArn": {
+            "Fn::GetAtt": [
+              "HttpApiLogGroup",
+              "Arn"
+            ]
+          },
+          "Format": "{\"requestTime\":\"$context.requestTime\",\"requestId\":\"$context.requestId\",\"apiId\":\"$context.apiId\",\"resourcePath\":\"$context.routeKey\",\"path\":\"$context.path\",\"httpMethod\":\"$context.httpMethod\",\"stage\":\"$context.stage\",\"status\":\"$context.status\",\"integrationStatus\":\"$context.integrationStatus\",\"integrationLatency\":\"$context.integrationLatency\",\"responseLatency\":\"$context.responseLatency\",\"responseLength\":\"$context.responseLength\",\"errorMessage\":\"$context.error.message\",\"format\":\"SLS_HTTP_API_LOG\",\"version\":\"1.0.0\"}"
         }
-      }
+      },
+      "DependsOn": "HttpApiLogGroup"
     },
     "UploadCustomerLambdaPermissionHttpApi": {
       "Type": "AWS::Lambda::Permission",
@@ -254,7 +412,7 @@
           ]
         },
         "PayloadFormatVersion": "2.0",
-        "TimeoutInMillis": 30000
+        "TimeoutInMillis": 6500
       }
     },
     "HttpApiRoutePostUploadcustomer": {
@@ -329,7 +487,7 @@
           ]
         },
         "PayloadFormatVersion": "2.0",
-        "TimeoutInMillis": 30000
+        "TimeoutInMillis": 6500
       }
     },
     "HttpApiRouteGetGetcustomers": {
@@ -368,27 +526,40 @@
   },
   "Outputs": {
     "ServerlessDeploymentBucketName": {
-      "Value": "serverless-framework-deployments-us-east-1-0ac85a8a-5e23",
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      },
       "Export": {
         "Name": "sls-CirclTask-dev-ServerlessDeploymentBucketName"
       }
     },
-    "UploadCustomerLambdaFunctionQualifiedArn": {
-      "Description": "Current Lambda function version",
+    "EnterpriseLogAccessIamRole": {
       "Value": {
-        "Ref": "UploadCustomerLambdaVersion6VKHdnRHJQj6R6omqfxzjnSSvTqosismCaAvNTaRo"
+        "Fn::GetAtt": [
+          "EnterpriseLogAccessIamRole",
+          "Arn"
+        ]
       },
       "Export": {
-        "Name": "sls-CirclTask-dev-UploadCustomerLambdaFunctionQualifiedArn"
+        "Name": "sls-CirclTask-dev-EnterpriseLogAccessIamRole"
       }
     },
     "GetCustomersLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetCustomersLambdaVersionUYmHzPCHdNWdNrk0hVIIHMVzMlRKXTZDsJkzD0ndI"
+        "Ref": "GetCustomersLambdaVersionnrYFhqhkWPreCDHUJqUUe7djA8mLujaJM23Rf0Xi3oM"
       },
       "Export": {
         "Name": "sls-CirclTask-dev-GetCustomersLambdaFunctionQualifiedArn"
+      }
+    },
+    "UploadCustomerLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "UploadCustomerLambdaVersiond120FpzGenkofBbAWGQdUbqKrPZE80MmVy7X8DIafM"
+      },
+      "Export": {
+        "Name": "sls-CirclTask-dev-UploadCustomerLambdaFunctionQualifiedArn"
       }
     },
     "HttpApiId": {

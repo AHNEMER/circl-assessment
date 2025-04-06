@@ -2,12 +2,14 @@ org: labibahtrd
 app: task1
 service: CirclTask
 
-
-
+plugins:
+  - serverless-aws-alias
 
 provider:
   name: aws
-  runtime: python3.12
+  runtime: python3.9
+  httpApi:
+    cors: true
   iam:
     role:
       statements:
@@ -27,9 +29,10 @@ provider:
   environment:
     S3_BUCKET_NAME: circltask-s3-bucket-dev
 
+custom:
+  alias:
+    baseAlias: dev
 
-# plugins:
-#   - serverless-aws-alias
 
 functions:
   uploadCustomer:
@@ -38,7 +41,6 @@ functions:
       - httpApi:
           path: /uploadCustomer
           method: post
-          cors: true
 
 
 
@@ -48,7 +50,6 @@ functions:
       - httpApi:
           path: /getCustomers
           method: get
-          cors: true
 
 resources:
   Resources:
